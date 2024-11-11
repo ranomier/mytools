@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# docstring=just shows the current capacity
+set -E -o pipefail
+
+cat /sys/class/power_supply/BAT0/capacity

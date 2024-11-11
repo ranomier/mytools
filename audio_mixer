@@ -1,0 +1,11 @@
+#/usr/bin/env bash
+# docstring=simple mixer gui app, for the desktop
+set -E -o pipefail
+
+mixxc \
+  --anchor right \
+  --margin 22 \
+  --anchor bottom \
+  --margin 22 \
+  --icon \
+  --master

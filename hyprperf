@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# docstring=disable hyprland blur for performance
+set -E -o pipefail
+
+hyprctl keyword decoration:blur:enabled false

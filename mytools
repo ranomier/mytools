@@ -1,0 +1,59 @@
+#!/usr/bin/env python3
+# docstring=lists all tools and their docstrings
+import os
+import os.path as path
+
+CFG = {
+    "max_lines": 20,
+    "offset": 20
+}
+
+def parse_docstring(file_path, max_lines=CFG["max_lines"]):
+    """
+    in file `file_path` and from the top until `max_lines` is reached,
+    checks if `docstring=` is present.
+    """
+    with open(file_path, "r") as file_fd:
+        count = 0
+        while count <= max_lines:
+            count += 1
+
+            line = file_fd.readline()
+            if "docstring=" in line:
+                try:
+                    return line.split("=")[1].strip("\n").strip(" ")
+                except IndexError:
+                    return ""
+        return ""
+
+
+def offset(element, offset=CFG["offset"]):
+    """
+    calculates the amount of spaces until `offset` is reached for `element` length
+    """
+    element_length = len(element.strip(""))
+    if element_length >= offset:
+        return ""
+    else:
+        return " " * (offset - element_length)
+
+
+def main():
+    """
+    lists all tools and their docstring from the same directory this sits in
+    """
+    script_path = os.path.dirname(os.path.realpath(__file__))
+    list_dir = sorted(os.listdir(script_path))
+
+    for element in list_dir:
+        element_path = path.join(script_path, element)
+        if path.isfile(element_path):
+            print(element, end="")
+            docstring = parse_docstring(element_path)
+            if docstring:
+                print(f":{offset(element)}{docstring}", end="")
+            print()
+
+
+if __name__ == "__main__":
+    main()

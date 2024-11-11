@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# docstring=serve files with http.
+set -E -o pipefail
+
+miniserve \
+  --auth=guest:Super9000! \
+  --color-scheme-dark=monokai \
+  --qrcode \
+  --dirs-first \
+  --hide-version-footer \
+  --show-wget-footer \
+  --title="Rano's quick share"
+
+
+# implement a switch for easy --upload-files=DIR

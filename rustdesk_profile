@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# docstring=have and create multiple rustdesk profiles
+set -E -o pipefail
+
+# define frist element in argument list as profile name
+RUSTDESK_PROFILE="$1"
+
+# Check user input
+if [[ $RUSTDESK_PROFILE == \-* ]] || [[ $RUSTDESK_PROFILE == \-\-* ]] || [[ -z "$RUSTDESK_PROFILE" ]];
+then
+	#printf "Please provide first a profile name and then optional options with - or --.\n"
+	printf "Please provide a profile name.\n"
+	exit 1
+fi
+
+# make sure profile folder for config exists.
+export XDG_CONFIG_HOME="$HOME/.config/rustdesk_${RUSTDESK_PROFILE}"
+mkdir -p "$XDG_CONFIG_HOME"
+printf "Using profile: $XDG_CONFIG_HOME\n"
+#exit 0
+
+# As of rustdesk 1.1.9 giving rustdesk unknown arguments crashes it with an address boundary error.
+# (At least on my machines)
+# Thats why we are calling rustdesk without arguments, until thats solved
+rustdesk #"${*:2}"

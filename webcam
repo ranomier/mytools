@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# docstring=open the webcam or v4l2 /dev/video* device
+set -E -o pipefail
+
+if [[ "-h" == "$1" ]]; then
+  echo "-l list devices"
+  exit 0
+elif [[ "-l" == "$1" ]]; then
+  ls -la /dev/video*
+  exit 0
+fi
+
+device="/dev/video""${1:-"0"}"
+echo ">>> opening: $device"
+mpv --panscan=1.0 --no-osc --profile=low-latency --untimed "av://v4l2:$device"

@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# docstring=searches the nix store with find
+set -E -o pipefail
+
+find /nix/store/ -maxdepth 1 -iname '*'"$@"'*'

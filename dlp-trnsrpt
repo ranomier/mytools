@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# docstring=transcript of youtube videos
+set -E -o pipefail
+
+TEMP_FOLDER='/tmp/dlp-trnsrpt'
+mkdir -p "$TEMP_FOLDER"
+cd "$TEMP_FOLDER"
+
+yt-dlp --write-auto-sub --sub-langs 'en.*,.*orig' --convert-subs=srt --skip-download "$*"
+nvim "$TEMP_FOLDER"/*-orig*
