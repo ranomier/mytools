@@ -4,6 +4,8 @@
 from os import environ
 import os.path as path
 import subprocess as sp
+
+# import like this makes the code run 1ms faster xD
 from sys import exit as sysexit
 from sys import argv as sysargv
 
