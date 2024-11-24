@@ -4,10 +4,7 @@
 from os import environ
 import os.path as path
 import subprocess as sp
-
-# import like this makes the code run 1ms faster xD
-from sys import exit as sysexit
-from sys import argv as sysargv
+import sys
 
 SCRIPT_FILENAME = path.basename(__file__)
 HOME = environ["HOME"]
@@ -29,7 +26,7 @@ def kctl(*args):
         print(f"Wrapped options form {SCRIPT_FILENAME}:")
         print("  list              list all available profiles")
 
-    sysexit(completed.returncode)
+    sys.exit(completed.returncode)
 
 
 def list_profiles(config_path=CFG["config_path"]):
@@ -41,7 +38,7 @@ def list_profiles(config_path=CFG["config_path"]):
 
 
 def main():
-    arguments = sysargv[1:]
+    arguments = sys.argv[1:]
     match arguments[0]:
         case "list":
             list_profiles()
