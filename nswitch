@@ -7,7 +7,15 @@ cd ~/Projects/NixOS/
 nvim
 nix fmt . &>/dev/null
 git diff -U0 *.nix
-echo "NixOS Rebuilding..."
+
+echo "Do you want to rebuild NixOS? [y/N]"
+read -r YESNO
+if ! [[ "${YESNO,,}" == "y" ]]; then
+  echo "Exiting ..."
+  exit 1
+fi
+
+echo "Rebuilding NixOS"
 sudo nixos-rebuild switch &>nixos-switch.log || (
   cat nixos-switch.log | grep --color error && false)
 gen=$(nixos-rebuild list-generations | grep current)
