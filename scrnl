@@ -1,21 +1,50 @@
 #!/usr/bin/env python3
 # docstring=wraps kanshictl and adds features
-import os
-import os.path as path
 
-HOME = os.environ["HOME"]
+from os import environ
+import os.path as path
+import subprocess as sp
+from sys import exit as sysexit
+from sys import argv as sysargv
+
+SCRIPT_FILENAME = path.basename(__file__)
+HOME = environ["HOME"]
 CFG = {
-    "config_path": path.join(HOME, ".config/kanshi/config")
+    "config_path": path.join(HOME, ".config/kanshi/config"),
+    "kanshi_bin": "kanshictl"
 }
 
-def extract_layouts(config_path=CFG["config_path"]):
+
+def kctl(*args):
+    args = list(args)
+    completed = sp.run([CFG["kanshi_bin"]] + args,
+                       capture_output=True,
+                       text=True)
+
+    stderr = completed.stderr
+    if "Usage: kanshictl" in stderr:
+        print(stderr)
+        print(f"Wrapped options form {SCRIPT_FILENAME}:")
+        print("  list              list all available profiles")
+
+    sysexit(completed.returncode)
+
+
+def list_profiles(config_path=CFG["config_path"]):
     with open(config_path, "r") as file_fd:
         for line in file_fd:
-            print(line)
+            line = line.strip(" ").strip("\n")
+            if line.startswith("profile"):
+                print(line.split()[1])
 
 
 def main():
-    extract_layouts()
+    arguments = sysargv[1:]
+    match arguments[0]:
+        case "list":
+            list_profiles()
+        case _:
+            kctl(*arguments)
 
 
 if __name__ == "__main__":
