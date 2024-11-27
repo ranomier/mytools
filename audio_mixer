@@ -1,4 +1,4 @@
-#/usr/bin/env bash
+#!/usr/bin/env bash
 # docstring=simple mixer gui app, for the desktop
 set -E -o pipefail
 shopt -s failglob
