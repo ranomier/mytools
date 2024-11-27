@@ -1,15 +1,20 @@
-#!/usr/bin/env bash
+#!/usr/bin/env python
 # docstring=serve files with http.
-set -E -o pipefail
 
-miniserve \
-  --auth=guest:Super9000! \
-  --color-scheme-dark=monokai \
-  --qrcode \
-  --dirs-first \
-  --hide-version-footer \
-  --show-wget-footer \
-  --title="Rano's quick share"
+import subprocess as sp
 
 
+def run():
+    sp.run(["miniserve",
+           "--auth=guest:Super9000!",
+           "--color-scheme-dark=monokai",
+           "--qrcode",
+           "--dirs-first",
+           "--hide-version-footer",
+           "--show-wget-footer",
+           "--title=Rano's quick share"
+            ])
+
+if __name__ == "__main__":
+    run()
 # implement a switch for easy --upload-files=DIR

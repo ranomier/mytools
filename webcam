@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # docstring=open the webcam or v4l2 /dev/video* device
 set -E -o pipefail
+shopt -s failglob
+export LC_ALL=C.UTF8
 
 if [[ "-h" == "$1" ]]; then
   echo "-l list devices"

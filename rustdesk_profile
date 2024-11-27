@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # docstring=have and create multiple rustdesk profiles
 set -E -o pipefail
+shopt -s failglob
+export LC_ALL=C.UTF8
 
 # define frist element in argument list as profile name
 RUSTDESK_PROFILE="$1"

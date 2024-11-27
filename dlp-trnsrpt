@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # docstring=transcript of youtube videos
 set -E -o pipefail
+shopt -s failglob
+export LC_ALL=C.UTF8
 
 TEMP_FOLDER='/tmp/dlp-trnsrpt'
 mkdir -p "$TEMP_FOLDER"

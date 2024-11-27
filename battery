@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # docstring=just shows the current capacity
 set -E -o pipefail
+shopt -s failglob
+export LC_ALL=C.UTF8
 
 cat /sys/class/power_supply/BAT0/capacity

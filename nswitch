@@ -2,6 +2,8 @@
 # from https://github.com/0atman/noboilerplate/blob/main/scripts/38-nixos.md#dont-use-nix-env
 # docstring=quick edit (or ling xD) for nixos config
 set -E -o pipefail
+shopt -s failglob
+export LC_ALL=C.UTF8
 
 cd ~/Projects/NixOS/
 nvim

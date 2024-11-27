@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # docstring=simplifies the brightnessctl command
 set -E -o pipefail
+shopt -s failglob
+export LC_ALL=C.UTF8
 
 # when invoked without parameter will print current brightness in percent
 # it accepts a parameter from 0 to 100 for brightness. Please ommit the % symbol.

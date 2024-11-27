@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # docstring=searches the nix store with find
 set -E -o pipefail
+shopt -s failglob
+export LC_ALL=C.UTF8
 
 find /nix/store/ -maxdepth 1 -iname '*'"$@"'*'
