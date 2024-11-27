@@ -1,5 +1,23 @@
-#!/usr/bin/env bash
+#!/usr/bin/env python
 # docstring=disable hyprland blur for performance
-set -E -o pipefail
+import subprocess as sp
+import json
 
-hyprctl keyword decoration:blur:enabled false
+def getoption(optionstring):
+    json_str = sp.run(["hyprctl",  "-j", "getoption", optionstring],
+                      capture_output=True,
+                      text=True).stdout
+
+    return json.loads(json_str)
+
+def set_blur(setstr):
+    return sp.run(["hyprctl", "keyword", "decoration:blur:enabled", setstr])
+
+def main():
+    if getoption("decoration:blur:enabled")["int"] == 1:
+        set_blur("false")
+    else:
+        set_blur("true")
+
+if __name__ == "__main__":
+    main()
