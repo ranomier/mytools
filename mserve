@@ -2,19 +2,39 @@
 # docstring=serve files with http.
 
 import subprocess as sp
+import argparse
 
+CFG = {
+    "base": [
+        "miniserve",
+        "--auth=guest:Super9000!",
+        "--color-scheme-dark=monokai",
+        "--qrcode",
+        "--dirs-first",
+        "--hide-version-footer",
+        "--show-wget-footer",
+        "--title=Rano's quick share",
+    ],
+    "folder": "./"
+}
 
-def run():
-    sp.run(["miniserve",
-           "--auth=guest:Super9000!",
-           "--color-scheme-dark=monokai",
-           "--qrcode",
-           "--dirs-first",
-           "--hide-version-footer",
-           "--show-wget-footer",
-           "--title=Rano's quick share"
-            ])
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-u", "--upload", help="enable upload", action="store_true")
+    args = ap.parse_args()
+
+    cmd = CFG["base"]
+
+    if args.upload:
+        cmd.extend(["--upload-files=./", "--overwrite-files"])
+
+    cmd.append(CFG["folder"])
+
+    try:
+        sp.run(cmd)
+    except KeyboardInterrupt:
+        print("\ninterrupted by user")
 
 if __name__ == "__main__":
-    run()
+    main()
 # implement a switch for easy --upload-files=DIR
