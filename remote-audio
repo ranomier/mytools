@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+#docstring=remote audio through roc-toolkit
+#!TODO! use list_ips
+#roc-recv -s rtp+rs8m://0.0.0.0:10001 -r rs8m://0.0.0.0:10002 -o alsa://default
+#roc-send -s rtp+rs8m://192.168.178.40:10001 -r rs8m://192.168.178.40:10002 -i alsa://default
+set -E -o pipefail
+shopt -s failglob
+export LC_ALL=C.UTF8
+
+start() {
+	roc-recv -s rtp+rs8m://0.0.0.0:10001 -r rs8m://0.0.0.0:10002 -o alsa://default &
+	roc-send -s rtp+rs8m://192.168.178.40:10001 -r rs8m://192.168.178.40:10002 -i alsa://default &
+}
+
+stop() {
+	killall roc-send
+	killall roc-recv
+}
+
+stop9() {
+	killall -9 roc-send
+	killall -9 roc-recv
+}
+
+if [[ -z "$1" ]]; then
+	#start()
+	start
+else
+	$1
+fi
