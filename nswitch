@@ -7,18 +7,22 @@ export LC_ALL=C.UTF8
 
 cd ~/Projects/NixOS/
 nvim
-nix fmt . &>/dev/null
-git diff -U0 *.nix
 
-echo "Do you want to rebuild NixOS? [y/N]"
-read -r YESNO
+printf ">>> auto formating ..."
+nix fmt . &> /dev/null
+printf " DONE!\n"
+
+git diff -U0 # "*.nix"
+
+printf ">>> Do you want to rebuild NixOS? [y/N]\n"
+printf "<<< " && read -r YESNO
 if ! [[ "${YESNO,,}" == "y" ]]; then
-  echo "Exiting ..."
+  printf ">>> Exiting ...\n"
   exit 1
 fi
 
-echo "Rebuilding NixOS"
-sudo nixos-rebuild switch &>nixos-switch.log || (
-  cat nixos-switch.log | grep --color error && false)
+printf ">>> Rebuilding NixOS\n"
+sudo nixos-rebuild switch | tee nixos-switch.log || (
+  grep --color error nixos-switch.log && false)
 gen=$(nixos-rebuild list-generations | grep current)
 git commit -am "$gen"
