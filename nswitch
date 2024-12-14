@@ -5,6 +5,10 @@ set -E -o pipefail
 shopt -s failglob
 export LC_ALL=C.UTF8
 
+PROJECT="$HOME/Projects/NixOS/"
+GIT_PATTERN="." # "*.nix"
+
+
 exit_with_new_shell() {
   printf '\n'
   printf '>>> opening a new \"%s\" shell\n' "$(basename "$SHELL")"
@@ -13,21 +17,23 @@ exit_with_new_shell() {
   exit 0
 }
 
-cd ~/Projects/NixOS/ || exit 1
+cd "$PROJECT" || exit 1
 nvim
 
 printf ">>> auto formating ..."
 nix fmt . &> /dev/null
 printf " DONE!\n"
 
-[ -z "$(git diff -U0)" ] && echo ">>> no changes, exiting ..." && exit_with_new_shell
-git diff -U0 # "*.nix" # as a seperate command so we get nice colors and pager
+[ -z "$(git diff -U0 "$GIT_PATTERN")" ] && echo ">>> no changes, exiting ..." && exit_with_new_shell
+git diff -U0 "$GIT_PATTERN" # as a seperate command so we get nice colors and pager
 
 printf ">>> Do you want to rebuild NixOS? [y/N]\n"
 printf "<<< " && read -r YESNO
 if ! [[ "${YESNO,,}" == "y" ]]; then
   exit_with_new_shell
 fi
+
+git add "$GIT_PATTERN"
 
 printf ">>> Rebuilding NixOS\n"
 sudo nixos-rebuild switch | tee nixos-switch.log || (
