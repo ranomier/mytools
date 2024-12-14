@@ -4,4 +4,4 @@ set -E -o pipefail
 shopt -s failglob
 export LC_ALL=C.UTF8
 
-find /nix/store/ -maxdepth 1 -iname '*'"$@"'*'
+find /nix/store/ -maxdepth 1 -iname '*'"$*"'*'
