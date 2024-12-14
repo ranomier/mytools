@@ -4,4 +4,9 @@ set -E -o pipefail
 shopt -s failglob
 export LC_ALL=C.UTF8
 
-grim -g "$(slurp -o -r -c '#ff0000ff')" - | satty --filename - --fullscreen --output-filename ~/Media/Pictures/Screenshots/satty-$(date '+%Y%m%d-%H:%M:%S').png
+grim -g "$(slurp -o -r -c '#ff0000ff')" - \
+  | satty \
+      --filename - \
+      --fullscreen \
+      --initial-tool "crop" \
+      --output-filename "$HOME/Media/Pictures/Screenshots/satty-$(date '+%Y%m%d-%H:%M:%S').png"
