@@ -12,7 +12,8 @@ printf ">>> auto formating ..."
 nix fmt . &> /dev/null
 printf " DONE!\n"
 
-git diff -U0 # "*.nix"
+[ -z "$(git diff -U0)" ] && echo ">>> no changes, exiting ..." && exit 0
+git diff -U0 # "*.nix" # as a seperate command so we get nice colors and pager
 
 printf ">>> Do you want to rebuild NixOS? [y/N]\n"
 printf "<<< " && read -r YESNO
