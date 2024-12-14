@@ -12,7 +12,7 @@ printf ">>> auto formating ..."
 nix fmt . &> /dev/null
 printf " DONE!\n"
 
-[ -z "$(git diff -U0)" ] && echo ">>> no changes, exiting ..." && exit 0
+[ -z "$(git diff -U0)" ] && echo ">>> no changes, exiting ..." && "$SHELL" && exit 0
 git diff -U0 # "*.nix" # as a seperate command so we get nice colors and pager
 
 printf ">>> Do you want to rebuild NixOS? [y/N]\n"
@@ -27,3 +27,5 @@ sudo nixos-rebuild switch | tee nixos-switch.log || (
   grep --color error nixos-switch.log && false)
 gen=$(nixos-rebuild list-generations | grep current)
 git commit -am "$gen"
+
+"$SHELL"
