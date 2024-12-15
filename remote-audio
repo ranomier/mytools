@@ -7,9 +7,18 @@ set -E -o pipefail
 shopt -s failglob
 export LC_ALL=C.UTF8
 
+
+
 start() {
-	roc-recv -s rtp+rs8m://0.0.0.0:10001 -r rs8m://0.0.0.0:10002 -o alsa://default &
-	roc-send -s rtp+rs8m://192.168.178.40:10001 -r rs8m://192.168.178.40:10002 -i alsa://default &
+	roc-recv \
+    --source=rtp+rs8m://0.0.0.0:10001 \
+    --repair=rs8m://0.0.0.0:10002 \
+    -o alsa://default &
+
+	roc-send \
+    -s rtp+rs8m://192.168.178.40:10001 \
+    -r rs8m://192.168.178.40:10002 \
+    -i alsa://default &
 }
 
 stop() {
