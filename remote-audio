@@ -32,7 +32,6 @@ stop9() {
 }
 
 if [[ -z "$1" ]]; then
-	#start()
 	start
 else
 	$1
