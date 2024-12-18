@@ -31,6 +31,10 @@ stop9() {
 	killall -9 roc-recv
 }
 
+list() {
+  pgrep -a 'roc-'
+}
+
 if [[ -z "$1" ]]; then
 	start
 else
