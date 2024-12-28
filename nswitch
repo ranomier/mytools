@@ -5,11 +5,15 @@ set -E -o pipefail
 shopt -s failglob
 export LC_ALL=C.UTF8
 
-PROJECT="$HOME/Projects/NixOS/"
+INITIAL_PWD="$(pwd)"
+PROJECT="$HOME/Projects/NixOS"
 GIT_PATTERN="." # "*.nix"
 
 
 exit_with_new_shell() {
+  # check if already in directory
+  [[ "$INITIAL_PWD" = "$PROJECT" ]] && printf '>>> already in directory\n' && exit 0
+
   printf '\n'
   printf '>>> opening a new \"%s\" shell\n' "$(basename "$SHELL")"
   printf '>>> cwd: %s\n' "$(pwd)"
@@ -24,7 +28,7 @@ printf ">>> auto formating ..."
 nix fmt . &> /dev/null
 printf " DONE!\n"
 
-[ -z "$(git diff -U0 "$GIT_PATTERN")" ] && echo ">>> no changes, exiting ..." && exit_with_new_shell
+[[ -z "$(git diff -U0 "$GIT_PATTERN")" ]] && echo ">>> no changes, exiting ..." && exit_with_new_shell
 git diff -U0 "$GIT_PATTERN" # as a seperate command so we get nice colors and pager
 
 printf ">>> Do you want to rebuild NixOS? [y/N]\n"
