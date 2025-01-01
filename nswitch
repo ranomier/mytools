@@ -16,7 +16,7 @@ exit_with_new_shell() {
 
   printf '\n'
   printf '>>> opening a new \"%s\" shell\n' "$(basename "$SHELL")"
-  printf '>>> cwd: %s\n' "$(pwd)"
+  printf '    cwd: %s\n' "$(pwd)"
   "$SHELL"
   exit 0
 }
