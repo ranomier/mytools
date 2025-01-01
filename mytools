@@ -6,7 +6,8 @@ import os.path as path
 
 CFG = {
     "max_lines": 20,
-    "offset": 20
+    "offset": 20,
+    "ignored_files": ["LICENSE"]
 }
 SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 
@@ -48,6 +49,8 @@ def list_tools():
     list_dir = sorted(os.listdir(SCRIPT_PATH))
 
     for element in list_dir:
+        if element in CFG["ignored_files"]:
+            continue
         element_path = path.join(SCRIPT_PATH, element)
         if path.isfile(element_path):
             print(element, end="")
