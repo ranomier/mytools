@@ -24,11 +24,15 @@ exit_with_new_shell() {
 cd "$PROJECT" || exit 1
 nvim
 
+# check if there are changes at all
+[[ -z "$(git diff -U0 "$GIT_PATTERN")" ]] && echo ">>> no changes, exiting ..." && exit_with_new_shell
+
+# only then do auto formating
 printf ">>> auto formating ..."
 nix fmt . &> /dev/null
 printf " DONE!\n"
 
-[[ -z "$(git diff -U0 "$GIT_PATTERN")" ]] && echo ">>> no changes, exiting ..." && exit_with_new_shell
+# and then show the user a diff
 git diff -U0 "$GIT_PATTERN" # as a seperate command so we get nice colors and pager
 
 printf ">>> Do you want to rebuild NixOS? [y/N]\n"
