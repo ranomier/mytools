@@ -41,12 +41,15 @@ if ! [[ "${YESNO,,}" == "y" ]]; then
   exit_with_new_shell
 fi
 
+printf ">>> Add everything to git staging so nix can find it\n"
 git add "$GIT_PATTERN"
 
 printf ">>> Rebuilding NixOS\n"
 sudo nixos-rebuild switch | tee nixos-switch.log || (
   grep --color error nixos-switch.log && false)
 gen=$(nixos-rebuild list-generations | grep current)
+
+printf ">>> commiting to git\n"
 git commit -am "$gen"
 
 exit_with_new_shell
