@@ -14,6 +14,8 @@ exit_with_new_shell() {
   # check if already in directory
   [[ "$INITIAL_PWD" = "$PROJECT" ]] && printf '>>> already in directory\n' && exit 0
 
+  cd "$PROJECT" || exit 1
+
   printf '\n'
   printf '>>> opening a new \"%s\" shell\n' "$(basename "$SHELL")"
   printf '    cwd: %s\n' "$(pwd)"
@@ -21,35 +23,59 @@ exit_with_new_shell() {
   exit 0
 }
 
-cd "$PROJECT" || exit 1
-nvim
+quick_edit() {
+  cd "$PROJECT" || exit 1
+  nvim
 
-# check if there are changes at all
-[[ -z "$(git diff -U0 "$GIT_PATTERN")" ]] && echo ">>> no changes, exiting ..." && exit_with_new_shell
+  # check if there are changes at all
+  [[ -z "$(git diff -U0 "$GIT_PATTERN")" ]] && echo ">>> no changes, exiting ..." && exit_with_new_shell
 
-# only then do auto formating
-printf ">>> auto formating ..."
-nix fmt . &> /dev/null
-printf " DONE!\n"
+  # only then do auto formating
+  printf ">>> auto formating ..."
+  nix fmt . &> /dev/null
+  printf " DONE!\n"
 
-# and then show the user a diff
-git diff -U0 "$GIT_PATTERN" # as a seperate command so we get nice colors and pager
+  # and then show the user a diff
+  git diff -U0 "$GIT_PATTERN" # as a seperate command so we get nice colors and pager
 
-printf ">>> Do you want to rebuild NixOS? [y/N]\n"
-printf "<<< " && read -r YESNO
-if ! [[ "${YESNO,,}" == "y" ]]; then
+  printf ">>> Do you want to rebuild NixOS? [y/N]\n"
+  printf "<<< " && read -r YESNO
+  if ! [[ "${YESNO,,}" == "y" ]]; then
+    exit_with_new_shell
+  fi
+
+  printf ">>> Add everything to git staging so nix can find it\n"
+  git add "$GIT_PATTERN"
+
+  printf ">>> Rebuilding NixOS\n"
+  sudo nixos-rebuild switch | tee nixos-switch.log || (
+    grep --color error nixos-switch.log && false)
+  gen=$(nixos-rebuild list-generations | grep current)
+
+  printf ">>> commiting to git\n"
+  git commit -am "$gen"
+
   exit_with_new_shell
+}
+
+
+help_msg() {
+  printf -- '  without arguments start the main loop\n'
+  printf -- '--help                 | -h    -> show this message\n'
+  printf -- '--new-shell-in-project | -s    -> show this message\n'
+}
+
+
+
+if [[ -z "$1" ]]; then
+	quick_edit
+elif [[ "$1" = "--help" || "$1" = "-h" ]]; then
+  help_msg
+elif [[ "$1" = "--new-shell-in-project" || "$1" = "-s" ]]; then
+  exit_with_new_shell
+else
+  help_msg
+  printf "=================\n"
+	printf "didn't recognise: %s\n" "$1"
+  exit 1
 fi
-
-printf ">>> Add everything to git staging so nix can find it\n"
-git add "$GIT_PATTERN"
-
-printf ">>> Rebuilding NixOS\n"
-sudo nixos-rebuild switch | tee nixos-switch.log || (
-  grep --color error nixos-switch.log && false)
-gen=$(nixos-rebuild list-generations | grep current)
-
-printf ">>> commiting to git\n"
-git commit -am "$gen"
-
-exit_with_new_shell
