@@ -21,7 +21,4 @@ mkdir -p "$XDG_CONFIG_HOME"
 printf 'Using profile: %s\n' "$XDG_CONFIG_HOME"
 #exit 0
 
-# As of rustdesk 1.1.9 giving rustdesk unknown arguments crashes it with an address boundary error.
-# (At least on my machines)
-# Thats why we are calling rustdesk without arguments, until thats solved
-rustdesk #"${*:2}"
+rustdesk "${*:2}"
