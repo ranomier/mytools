@@ -8,6 +8,10 @@ export LC_ALL=C.UTF8
 INITIAL_PWD="$(pwd)"
 PROJECT="$HOME/Projects/NixOS"
 GIT_PATTERN="." # "*.nix"
+SELF_EDITOR="$EDITOR" # here you can overwrite which editor should be used
+
+# switch into the project for the whole script
+cd "$PROJECT" || exit 1
 
 
 exit_with_new_shell() {
@@ -23,33 +27,48 @@ exit_with_new_shell() {
   exit 0
 }
 
-quick_edit() {
-  cd "$PROJECT" || exit 1
-  nvim
 
-  # check if there are changes at all
-  [[ -z "$(git diff -U0 "$GIT_PATTERN")" ]] && echo ">>> no changes, exiting ..." && exit_with_new_shell
-
-  # only then do auto formating
-  printf ">>> auto formating ..."
-  nix fmt . &> /dev/null
-  printf " DONE!\n"
-
-  # and then show the user a diff
-  git diff -U0 "$GIT_PATTERN" # as a seperate command so we get nice colors and pager
-
+ask_for_rebuild() {
   printf ">>> Do you want to rebuild NixOS? [y/N]\n"
   printf "<<< " && read -r YESNO
   if ! [[ "${YESNO,,}" == "y" ]]; then
     exit_with_new_shell
   fi
+}
+
+
+rebuild() {
+  printf ">>> Rebuilding NixOS\n"
+  sudo nixos-rebuild switch | tee nixos-switch.log || (
+    grep --color error nixos-switch.log && false)
+}
+
+autoformat() {
+  printf ">>> auto formating ..."
+  nix fmt . &> /dev/null
+  printf " DONE!\n"
+}
+
+
+quick_edit() {
+  "$SELF_EDITOR"
+
+  # check if there are changes at all
+  [[ -z "$(git diff -U0 "$GIT_PATTERN")" ]] && echo ">>> no changes, exiting ..." && exit_with_new_shell
+
+  # only then do auto formating
+  autoformat
+
+  # and then show the user a diff
+  git diff -U0 "$GIT_PATTERN" # as a seperate command so we get nice colors and pager
+
+  ask_for_rebuild
 
   printf ">>> Add everything to git staging so nix can find it\n"
   git add "$GIT_PATTERN"
 
-  printf ">>> Rebuilding NixOS\n"
-  sudo nixos-rebuild switch | tee nixos-switch.log || (
-    grep --color error nixos-switch.log && false)
+  rebuild
+
   gen=$(nixos-rebuild list-generations | grep current)
 
   printf ">>> commiting to git\n"
@@ -59,20 +78,36 @@ quick_edit() {
 }
 
 
-help_msg() {
-  printf -- '  without arguments start the main loop\n'
-  printf -- '--help                 | -h    -> show this message\n'
-  printf -- '--new-shell-in-project | -s    -> show this message\n'
+update() {
+  nix flake update
+  ask_for_rebuild
+  rebuild
 }
 
+
+help_msg() {
+  printf -- '# only one option can be selected\n'
+  printf -- '  without arguments            -> quick edit mode\n'
+  printf -- '--edit                 | -e    -> only edit\n'
+  printf -- '--update               | -u    -> update the system\n'
+  printf -- '--autoformat           | -f    -> only autoformat\n'
+  printf -- '--new-shell-in-project | -s    -> start new shell, with cwd in the project\n'
+  printf -- '--help                 | -h    -> show this message\n'
+}
 
 
 if [[ -z "$1" ]]; then
 	quick_edit
-elif [[ "$1" = "--help" || "$1" = "-h" ]]; then
-  help_msg
+elif [[ "$1" = "--edit" || "$1" = "-e" ]]; then
+  "$SELF_EDITOR"
+elif [[ "$1" = "--update" || "$1" = "-u" ]]; then
+  update
+elif [[ "$1" = "--autoformat" || "$1" = "-f" ]]; then
+  autoformat
 elif [[ "$1" = "--new-shell-in-project" || "$1" = "-s" ]]; then
   exit_with_new_shell
+elif [[ "$1" = "--help" || "$1" = "-h" ]]; then
+  help_msg
 else
   help_msg
   printf "=================\n"
