@@ -9,5 +9,5 @@ mkdir -p "$TEMP_FOLDER"
 cd "$TEMP_FOLDER" || exit 1
 
 yt-dlp --write-auto-sub --sub-langs 'en.*,.*orig' --convert-subs=srt --skip-download "$*"
-nvim "$TEMP_FOLDER"/*-orig*
+"$EDITOR" "$TEMP_FOLDER"/*-orig*
 "$SHELL"
