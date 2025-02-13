@@ -1,13 +1,48 @@
-#!/usr/bin/env bash
+#!/usr/bin/env python3
 # docstring=transcript of youtube videos
-set -E -o pipefail
-shopt -s failglob
-export LC_ALL=C.UTF8
+# set -E -o pipefail
+# shopt -s failglob
+# export LC_ALL=C.UTF8
+#
+# TEMP_FOLDER='/tmp/dlp-trnsrpt'
+# mkdir -p "$TEMP_FOLDER"
+# cd "$TEMP_FOLDER" || exit 1
+#
+# yt-dlp --write-auto-sub --sub-langs 'en.*,.*orig' --convert-subs=srt --skip-download "$*"
+# "$EDITOR" "$TEMP_FOLDER"/*-orig*
+# "$SHELL"
 
-TEMP_FOLDER='/tmp/dlp-trnsrpt'
-mkdir -p "$TEMP_FOLDER"
-cd "$TEMP_FOLDER" || exit 1
+import subprocess as sp
+from os import makedirs, chdir, environ
+from sys import argv
+from glob import glob
 
-yt-dlp --write-auto-sub --sub-langs 'en.*,.*orig' --convert-subs=srt --skip-download "$*"
-"$EDITOR" "$TEMP_FOLDER"/*-orig*
-"$SHELL"
+CFG = {
+    "TEMP_FOLDER": "/tmp/dlp-trnsrpt/",
+}
+
+
+def main():
+    makedirs(CFG["TEMP_FOLDER"], exist_ok=True)  # like mkdir -p
+    chdir(CFG["TEMP_FOLDER"])
+
+    sp.run(
+        [
+            "yt-dlp",
+            "--write-auto-sub",
+            "--sub-langs=en.*,.*orig",
+            "--convert-subs=srt",
+            "--skip-download",
+            argv[1],
+        ]
+    )
+
+    cmd = [environ["EDITOR"]]
+    cmd.extend(glob(CFG["TEMP_FOLDER"] + "/*orig*"))
+    sp.run(cmd)
+
+    sp.run([environ["SHELL"]])
+
+
+if __name__ == "__main__":
+    main()
