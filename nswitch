@@ -5,6 +5,8 @@ set -E -o pipefail
 shopt -s failglob
 export LC_ALL=C.UTF8
 
+# TODO: implement step by step update with diff in between (first build then switch)
+
 INITIAL_PWD="$(pwd)"
 PROJECT="$HOME/Projects/NixOS"
 GIT_PATTERN="." # "*.nix"
