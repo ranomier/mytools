@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # docstring=do a screenshots on wayland compositors
+# dependencies=grim, slurp, satty
+
 set -E -o pipefail
 shopt -s failglob
 export LC_ALL=C.UTF8
