@@ -18,4 +18,5 @@ grim -g "$(slurp -o -r -c '#ff0000ff')" - \
       --filename - \
       --fullscreen \
       --initial-tool "crop" \
+      --annotation-size-factor "0.75" \
       --output-filename "$PICTURES/Screenshots/satty-$(date '+%Y%m%d-%H:%M:%S').png"
