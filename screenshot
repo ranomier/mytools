@@ -13,7 +13,11 @@ source "$XDG_CONFIG_HOME/user-dirs.dirs"
 
 mkdir -p "$PICTURES"
 
-grim -g "$(slurp -o -r -c '#ff0000ff')" - \
+dimensions="$(slurp -o -r -c '#ff0000ff')"
+
+sleep "${1:-0}"
+
+grim -g "$dimensions" - \
   | satty \
       --filename - \
       --fullscreen \
