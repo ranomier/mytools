@@ -1,0 +1,45 @@
+#!/usr/bin/env python3
+"""Parse git help --all --no-aliases output to extract commands by category."""
+
+import subprocess
+
+
+def parse_git_help():
+    """Parse git help and return commands organized by category."""
+    result = subprocess.run(
+        ["git", "help", "--all", "--no-aliases"],
+        capture_output=True,
+        text=True,
+        check=True
+    )
+
+    commands = {}
+    current_category = None
+
+    for line in result.stdout.split('\n'):
+        stripped = line.strip()
+
+        if not stripped:
+            continue
+
+        if line[0].isspace():
+            # Command line
+            if current_category:
+                parts = stripped.split(None, 1)
+                if len(parts) == 2:
+                    commands[current_category][parts[0]] = parts[1]
+        else:
+            # Category header
+            current_category = stripped
+            commands[current_category] = {}
+
+    return commands
+
+
+def main():
+    commands = parse_git_help()
+    print(commands)
+
+
+if __name__ == "__main__":
+    main()
