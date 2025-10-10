@@ -1,0 +1,58 @@
+#!/usr/bin/env python
+# docstring=Privacy guard helper
+
+
+CFG = {
+    "prvc_path": "/proc/acpi/ibm/lcdshadow",
+    "name": "Privacy Guard"
+}
+
+
+def _parse_lcdshadow():
+    with open(CFG["prvc_path"], "r") as fd:
+        raw_data = fd.readlines()
+    parsed_dict = {}
+    for line in raw_data:
+        split_line = line.replace("\t", "").replace("\n", "").split(":")
+        if "," in split_line[1]:
+            parsed_dict[split_line[0]] = split_line[1].split(",")
+        else:
+            parsed_dict[split_line[0]] = split_line[1]
+    return parsed_dict
+
+
+def status():
+    return _parse_lcdshadow()["status"]
+
+
+def pretty_status():
+    match status():
+        case "1":
+            return f"{CFG["name"]}: on"
+        case "0":
+            return f"{CFG["name"]}: off"
+        case _:
+            return f"'{status()}' unknown"
+
+
+def toggle():
+    with open(CFG["prvc_path"], "w") as fd:
+        match status():
+            case "1":
+                fd.write("0")
+                fd.flush()
+            case "0":
+                fd.write("1")
+                fd.flush()
+            case _:
+                return f"'{status()}' unknown"
+
+
+def main():
+    print(pretty_status())
+    print(toggle())
+
+
+if __name__ == "__main__":
+    main()
+

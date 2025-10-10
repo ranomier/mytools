@@ -1,0 +1,22 @@
+#! /usr/bin/env python
+import argparse
+from os import environ
+import subprocess as sp
+
+
+def create_subshell_and_cd(path: str):
+    sp.run([environ["SHELL"]])
+
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-p", "--path", help="output path to tools directory", action="store_true")
+    args = ap.parse_args()
+
+    if args.path:
+        create_subshell_and_cd("bla")
+
+if __name__ == "__main__":
+    main()
+

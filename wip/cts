@@ -1,0 +1,65 @@
+#!/usr/bin/env python
+
+import argparse
+import subprocess as sp
+import sys
+from shutil import which
+from pathlib import Path
+
+# Configuration for container CLI priorities and available shells
+default_cfg = {
+    "container_cli": ["podman", "docker"],
+    "shells": [Path("/bin/bash"), Path("/bin/shasda")]
+}
+
+class ContainerRunner:
+    """Encapsulates logic to run a shell inside a container via a specific CLI."""
+    def __init__(self, cli_path: str, shells=None):
+        self.cli = cli_path
+        self.shells = shells or default_cfg["shells"]
+
+    def run_shell(self, image: str, container_args: list):
+        errors = []
+        for shell in self.shells:
+            cmd = [self.cli, 'run'] + container_args + [image, str(shell)]
+            try:
+                # Capture stderr only; do not show unless error occurs
+                sp.run(cmd, check=True, stderr=sp.PIPE, text=True)
+                return
+            except sp.CalledProcessError as e:
+                errors.append(e)
+        # All shells failed: print collected stderr outputs
+        for err in errors:
+            msg = err.stderr.strip() if err.stderr else '<no stderr>'
+            print(f"Error invoking {err.cmd}: {msg}", file=sys.stderr)
+        print("ERROR: No compatible shell found in the container.", file=sys.stderr)
+        sys.exit(1)
+
+class RunnerFactory:
+    """Factory for creating ContainerRunner instances based on available CLIs."""
+    @staticmethod
+    def get_runner():
+        for name in default_cfg["container_cli"]:
+            path = which(name)
+            if path:
+                return ContainerRunner(path)
+        print("ERROR: No container runtime ('podman' or 'docker') found.", file=sys.stderr)
+        sys.exit(1)
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Run the first available shell inside a container image."
+    )
+    parser.add_argument('--cargs', '-c', nargs='+', metavar='ARG',
+                        default=['--rm', '-ti'],
+                        help="Container CLI args (replaces defaults).")
+    parser.add_argument('image', help="Container image URI.")
+    args = parser.parse_args()
+
+    runner = RunnerFactory.get_runner()
+    runner.run_shell(args.image, args.cargs)
+
+if __name__ == '__main__':
+    main()
+

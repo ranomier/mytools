@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# docstring=start steam gamepadui within gamescope
+set -E -o pipefail
+shopt -s failglob
+#export LC_ALL=C.UTF8
+
+gamescope --expose-wayland --backend wayland -W 1920 -H 1080 -w 1920 -h 1080 --steam -- steam -gamepadui &
+disown

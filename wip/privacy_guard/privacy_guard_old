@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# docstring=simple mixer gui app, for the desktop
+set -E -o pipefail
+shopt -s failglob
+export LC_ALL=C.UTF8
+
+PRVC_PATH="/proc/acpi/ibm/lcdshadow"
+
+
+_status() {
+  cat $PRVC_PATH | grep "^status:" | cut -d ':' -f 2 | tr -d " "
+}
+
+
+toggle() {
+  if [[ "$(brightnessctl get)" == "0" ]]; then
+    brightnessctl --restore || brightnessctl set '50%' # just in case --restore fails
+  else
+    brightnessctl --save && brightnessctl set 0
+  fi
+  exit 0 # if toggle is used don't continue
+}
+
+
+status() {
+  printf '%s\n' "$(cat $PRVC_PATH)"
+}
+
+
+help_msg() {
+  printf -- '# only one option can be selected\n'
+  printf -- '  without arguments            -> show current status\n'
+  printf -- '--toggle               | -t    -> toggle it on or of\n'
+  printf -- '--help                 | -h    -> show this message\n'
+}
+
+
+if [[ -z "$1" ]]; then
+	_status
+elif [[ "$1" = "--edit" || "$1" = "-e" ]]; then
+  "$SELF_EDITOR"
+elif [[ "$1" = "--help" || "$1" = "-h" ]]; then
+  help_msg
+else
+  help_msg
+  printf "=================\n"
+	printf "didn't recognise: %s\n" "$1"
+  exit 1
+fi
+
