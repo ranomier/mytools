@@ -15,14 +15,19 @@ def parse_git_help():
 
     commands = {}
     current_category = None
+    skip_lines = 1
 
-    for line in result.stdout.split('\n'):
+    for line in result.stdout.splitlines():
+        if skip_lines > 0:
+            skip_lines -= 1
+            continue
+
         stripped = line.strip()
 
         if not stripped:
             continue
 
-        if line[0].isspace():
+        if line.startswith(" "):
             # Command line
             if current_category:
                 parts = stripped.split(None, 1)
