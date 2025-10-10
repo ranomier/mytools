@@ -31,8 +31,8 @@ def parse_git_help():
             # Command line
             if current_category:
                 parts = stripped.split(None, 1)
-                if len(parts) == 2:
-                    commands[current_category][parts[0]] = parts[1]
+                help_text = parts[1] if len(parts) > 1 else ""
+                commands[current_category][parts[0]] = help_text
         else:
             # Category header
             current_category = stripped
