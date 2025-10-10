@@ -84,6 +84,17 @@ update() {
   nix flake update
   ask_for_rebuild
   rebuild
+
+  git diff flake.lock
+  printf ">>> Do you want to commit ? [y/N]\n"
+  printf "<<< " && read -r YESNO
+  if [[ "${YESNO,,}" == "y" ]]; then
+    git add flake.lock
+    git status flake.lock
+    printf ">>> commiting\n"
+    git commit -m "chore: update flake.lock" --only -- flake.lock
+  fi
+
 }
 
 
