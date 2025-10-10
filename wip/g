@@ -2,6 +2,7 @@
 """Parse git help --all --no-aliases output to extract commands by category."""
 
 import subprocess
+import json
 
 
 def parse_git_help():
@@ -43,7 +44,7 @@ def parse_git_help():
 
 def main():
     commands = parse_git_help()
-    print(commands)
+    print(json.dumps(commands))
 
 
 if __name__ == "__main__":
