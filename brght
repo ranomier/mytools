@@ -7,7 +7,7 @@ export LC_ALL=C.UTF8
 # when invoked without parameter will print current brightness in percent
 # it accepts a parameter from 0 to 100 for brightness. Please ommit the % symbol.
 
-if [[ "$1" == "--toggle" ]]; then
+if [[ "$1" == "-t" || "$1" == "--toggle" ]]; then
   if [[ "$(brightnessctl get)" == "0" ]]; then
     brightnessctl --restore || brightnessctl set '50%' # just in case --restore fails
   else
